@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme{
+    --animate-menu-open: menu-open 0.5s ease-in-out forwards;
+    --animate-menu-close: menu-close 0.5s ease-in-out forwards;
+
+    @keyframes menu-open {
+        0% {
+            transform: translateY(-100%);
+            opacity: 0;
+            z-index: 40;
+            visibility: hidden;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+            z-index: 50;
+        }
+    }
+    @keyframes menu-close {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+            z-index: 50;
+        }
+        100% {
+            transform: translateY(-100%);
+            opacity: 0;
+            z-index: 0;
+            visibility: hidden;
+        }
+    }
+}
