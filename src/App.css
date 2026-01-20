@@ -3,6 +3,29 @@
 @theme{
     --animate-menu-open: menu-open 0.5s ease-in-out forwards;
     --animate-menu-close: menu-close 0.5s ease-in-out forwards;
+    --animate-fade-in-right: fade-in-right 1s ease-in-out forwards;
+    --animate-fade-out-right: fade-out-right 1s ease-in-out forwards;
+
+    @keyframes fade-in-right {
+        0% {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes fade-out-right {
+        0% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
 
     @keyframes menu-open {
         0% {
@@ -12,7 +35,7 @@
             visibility: hidden;
         }
         100% {
-            transform: translateY(0);
+            transform: translateY(-1%);
             opacity: 1;
             z-index: 50;
         }
