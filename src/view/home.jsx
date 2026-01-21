@@ -114,7 +114,7 @@ function Home() {
         </div>
 
         {/* HERO SECTION */}
-        <div className="flex flex-col px-2 items-center min-h-screen bg-[url('roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
+        <div className="flex flex-col px-2 items-center min-h-screen bg-[url('/roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
           <div className="flex justify-center items-center h-screen w-full px-4">
             <div className="font-bold text-center bg-gray-900 p-4 rounded-md flex">
               <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1">
