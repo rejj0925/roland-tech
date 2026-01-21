@@ -1,15 +1,81 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../App.css";
 import Phone from "../assets/phone-call.png";
 import Email from "../assets/gmail.png";
 
-//import { useInView } from "react-intersection-observer";
+function useInView(options) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.1, ...options },
+    );
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, [options]);
+
+  return [ref, inView];
+}
 
 function Home() {
+  const [ref1, view1] = useInView();
+  const [ref2, view2] = useInView();
+  const [ref3, view3] = useInView();
+  const [ref4, view4] = useInView();
+
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   const toggleMenu = () => {
     setMenuIsOpen(!menuIsOpen);
   };
+  const imgRef = useRef(null);
+
+  const goFullscreen = () => {
+    if (imgRef.current.requestFullscreen) {
+      imgRef.current.requestFullscreen();
+    } else if (imgRef.current.mozRequestFullScreen) {
+      /* Firefox */
+      imgRef.current.mozRequestFullScreen();
+    } else if (imgRef.current.webkitRequestFullscreen) {
+      /* Chrome, Safari & Opera */
+      imgRef.current.webkitRequestFullscreen();
+    } else if (imgRef.current.msRequestFullscreen) {
+      /* IE/Edge */
+      imgRef.current.msRequestFullscreen();
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      /* Firefox */
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      /* Chrome, Safari and Opera */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      /* IE/Edge */
+      document.msExitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handler = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handler);
+    return () => {
+      document.removeEventListener("fullscreenchange", handler);
+    };
+  }, []);
 
   return (
     <>
@@ -46,20 +112,27 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col px-2 items-center min-h-screen bg-[url('src/assets/roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
+
+        {/* HERO SECTION */}
+        <div className="flex flex-col px-2 items-center min-h-screen bg-[url('roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
           <div className="flex justify-center items-center h-screen w-full px-4">
-            <h1 className="text-white text-5xl font-bold text-center bg-gray-900 p-4 rounded-md">
-              Roland Technologies
-            </h1>
+            <div className="font-bold text-center bg-gray-900 p-4 rounded-md flex">
+              <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1">
+                Roland Technologies
+              </h1>
+            </div>
           </div>
 
           {/*ABOUT*/}
-          <div className="flex flex-col mt-11 bg-gray-200 p-5 rounded-t-md shadow-md gap-10 w-screen min-h-screen">
+          <div className="flex flex-col mt-11 bg-gray-200 p-5 pt-10 shadow-md gap-10 w-screen min-h-screen">
             <div className="flex flex-col gap-5 text-center justify-center items-center">
               <h2 className="text-2xl font-semibold">
                 Roland Technologies, Inc.
               </h2>
-              <div className="bg-white p-2 rounded-md shadow-md w-60 text-center">
+              <div
+                ref={ref1}
+                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-60 text-center`}
+              >
                 <p>
                   When it comes to Emergency and Critical Power, work with the
                   best generator system specialist in Southern California.
@@ -70,7 +143,10 @@ function Home() {
               <h2 className="text-2xl font-semibold mt-10">
                 About Roland Technologies
               </h2>
-              <div className="bg-white p-2 rounded-md shadow-md w-60 text-center">
+              <div
+                ref={ref1}
+                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-60 text-center`}
+              >
                 <p>
                   An experienced generator systems specialist with many
                   satisfied clients ranging from industrial as well as
@@ -79,11 +155,26 @@ function Home() {
                 </p>
               </div>
               <div className="flex flex-col justify-center items-center gap-0">
-                <img
-                  src="src/assets/ikea_carson_generator.jpg"
-                  alt="Generator"
-                  className="object-cover w-fit border-2 rounded-2xl overflow-hidden shadow-lg"
-                />
+                <div
+                  ref={imgRef}
+                  onClick={goFullscreen}
+                  className="border-2 rounded-md overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
+                >
+                  <img
+                    src="ikea_carson_generator.jpg"
+                    alt="Generator"
+                    className="object-cover border-2 rounded-md overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
+                  />
+                  {isFullscreen && (
+                    <button
+                      onClick={exitFullscreen}
+                      className="fixed top-10 right-5 bg-gray-600 text-white px-3 py-2 rounded z-50 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
                 <p className="italic text-gray-700 text-sm">
                   Generator Installation
                 </p>
@@ -98,7 +189,9 @@ function Home() {
             <h1 className="text-4xl">Stay Connected, Reliable Service</h1>
           </div>
           <div className="w-full h-full flex justify-center flex-col p-10">
-            <p className="flex justify-start italic text-gray-700 text-xs">Location of Roland Technologies</p>
+            <p className="flex justify-start italic text-gray-700 text-xs">
+              Location of Roland Technologies
+            </p>
             <div className="flex justify-center items-center border-2 w-full h-full">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3301.0498090669203!2d-118.50144652452283!3d34.17064417311263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c299cd9b4af085%3A0xc53f5242436b194f!2s5462%20Forbes%20Ave%2C%20Encino%2C%20CA%2091436%2C%20USA!5e0!3m2!1sen!2sph!4v1768895367238!5m2!1sen!2sph"

@@ -1,56 +1,87 @@
 @import "tailwindcss";
 
-@theme{
-    --animate-menu-open: menu-open 0.5s ease-in-out forwards;
-    --animate-menu-close: menu-close 0.5s ease-in-out forwards;
-    --animate-fade-in-right: fade-in-right 1s ease-in-out forwards;
-    --animate-fade-out-right: fade-out-right 1s ease-in-out forwards;
+@theme {
+  --animate-menu-open: menu-open 0.5s ease-in-out forwards;
+  --animate-menu-close: menu-close 0.5s ease-in-out forwards;
+  --animate-fade-in-right: fade-in-right 1s ease-in-out forwards;
+  --animate-fade-out-right: fade-out-right 1s ease-in-out forwards;
+  --animate-typing:
+    typing 2s steps(20) forwards, blink-caret 0.75s infinite;
 
-    @keyframes fade-in-right {
-        0% {
-            opacity: 0;
-            transform: translateX(-100%);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
+  @keyframes typing {
+    0% {
+      width: 0;
     }
-    @keyframes fade-out-right {
-        0% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        100% {
-            opacity: 0;
-            transform: translateX(-100%);
-        }
+    100% {
+      width: 100%;
     }
+  }
+  @keyframes blink-caret {
+    50% {
+      border-color: transparent;
+    }
+    100% {
+      border-color: white;
+    }
+  }
 
-    @keyframes menu-open {
-        0% {
-            transform: translateY(-100%);
-            opacity: 0;
-            z-index: 40;
-            visibility: hidden;
-        }
-        100% {
-            transform: translateY(-1%);
-            opacity: 1;
-            z-index: 50;
-        }
+  @keyframes fade-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(-100%);
     }
-    @keyframes menu-close {
-        0% {
-            transform: translateY(0);
-            opacity: 1;
-            z-index: 50;
-        }
-        100% {
-            transform: translateY(-100%);
-            opacity: 0;
-            z-index: 0;
-            visibility: hidden;
-        }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
     }
+  }
+  @keyframes fade-out-right {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes menu-open {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+      z-index: 40;
+      visibility: hidden;
+    }
+    100% {
+      transform: translateY(-1%);
+      opacity: 1;
+      z-index: 50;
+    }
+  }
+  @keyframes menu-close {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+      z-index: 50;
+    }
+    100% {
+      transform: translateY(-100%);
+      opacity: 0;
+      z-index: 0;
+      visibility: hidden;
+    }
+  }
+}
+
+@layer utilities {
+  div:fullscreen img {
+    @apply w-full h-full object-contain bg-black p-5 cursor-default;
+  }
+  div:-webkit-full-screen img {
+    @apply w-full h-full object-contain bg-black p-5 cursor-default;
+  }
+  div:-moz-full-screen img {
+    @apply w-full h-full object-contain bg-black p-5 cursor-default;
+  }
 }
