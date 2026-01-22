@@ -9,8 +9,13 @@ function useInView(options) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.1, ...options },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.5, ...options },
     );
 
     if (ref.current) observer.observe(ref.current);
@@ -116,38 +121,38 @@ function Home() {
         {/* HERO SECTION */}
         <div className="flex flex-col px-2 items-center min-h-screen bg-[url('/roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
           <div className="flex justify-center items-center h-screen w-full px-4">
-            <div className="font-bold text-center bg-gray-900 p-4 rounded-md flex">
-              <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1">
-                Roland Technologies
+            <div className="font-bold text-center bg-gray-900 p-4 mx-4 rounded-md flex justify-center items-center shadow-lg">
+              <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1 flex-nowrap lg:text-nowrap">
+                Roland Technologies.
               </h1>
             </div>
           </div>
 
           {/*ABOUT*/}
-          <div className="flex flex-col mt-11 bg-gray-200 p-5 pt-10 shadow-md gap-10 w-screen min-h-screen">
-            <div className="flex flex-col gap-5 text-center justify-center items-center">
-              <h2 className="text-2xl font-semibold">
+          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-md gap-20 w-screen min-h-screen">
+            <div className="flex flex-col gap-5 text-center justify-center items-center w-full px-10">
+              <h2 className="text-5xl font-semibold">
                 Roland Technologies, Inc.
               </h2>
               <div
                 ref={ref1}
-                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-60 text-center`}
+                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
               >
-                <p>
+                <p className="text-2xl">
                   When it comes to Emergency and Critical Power, work with the
                   best generator system specialist in Southern California.
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-5 text-center justify-center items-center">
-              <h2 className="text-2xl font-semibold mt-10">
+            <div className="flex flex-col gap-5 text-center justify-center items-center px-10">
+              <h2 className="text-5xl font-semibold mt-10">
                 About Roland Technologies
               </h2>
               <div
                 ref={ref1}
-                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-60 text-center`}
+                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
               >
-                <p>
+                <p className="text-2xl">
                   An experienced generator systems specialist with many
                   satisfied clients ranging from industrial as well as
                   commercial businesses and even cities. Stay up to code and
@@ -161,9 +166,9 @@ function Home() {
                   className="border-2 rounded-md overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
                 >
                   <img
-                    src="ikea_carson_generator.jpg"
+                    src="/ikea_carson_generator.jpg"
                     alt="Generator"
-                    className="object-cover border-2 rounded-md overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
+                    className="object-cover overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
                   />
                   {isFullscreen && (
                     <button
@@ -184,15 +189,18 @@ function Home() {
         </div>
 
         {/* SERVICE PROMO */}
-        <div className="py-20 bg-white w-screen h-screen flex justify-center items-center font-bold text-center gap-20 flex-col shadow-md">
-          <div className="w-full">
+        <div className="py-10 bg-white w-screen h-screen flex justify-center items-center font-bold text-center gap-20 flex-col shadow-md">
+          <div
+            ref={ref2}
+            className={`${view2 ? "animate-fade-in-up" : "opacity-0"} w-full transition duration-700`}
+          >
             <h1 className="text-4xl">Stay Connected, Reliable Service</h1>
           </div>
-          <div className="w-full h-full flex justify-center flex-col p-10">
+          <div className="w-full h-full flex justify-center flex-col px-10">
             <p className="flex justify-start italic text-gray-700 text-xs">
               Location of Roland Technologies
             </p>
-            <div className="flex justify-center items-center border-2 w-full h-full">
+            <div className="flex justify-center items-center border-2 w-full h-full rounded-md overflow-hidden shadow-lg">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3301.0498090669203!2d-118.50144652452283!3d34.17064417311263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c299cd9b4af085%3A0xc53f5242436b194f!2s5462%20Forbes%20Ave%2C%20Encino%2C%20CA%2091436%2C%20USA!5e0!3m2!1sen!2sph!4v1768895367238!5m2!1sen!2sph"
                 className="w-full h-full"
@@ -211,20 +219,24 @@ function Home() {
           </h2>
           <div className="flex flex-row gap-5 justify-around text-gray-700">
             <div className="items-center justify-around">
-              <img
-                src={Phone}
-                alt="Phone Icon"
-                className="w-6 h-6 mx-auto mb-1"
-              />
-              <p>(818) 984-3777</p>
+              <a href="tel:+18189843777">
+                <img
+                  src={Phone}
+                  alt="Phone Icon"
+                  className="w-6 h-6 mx-auto mb-1"
+                />
+              </a>
+              <p className="whitespace-nowrap">(818) 984-3777</p>
             </div>
             <div className="items-center justify-around">
-              <img
-                src={Email}
-                alt="Email Icon"
-                className="w-6 h-6 mx-auto mb-1"
-              />
-              <p>Roland@roland-tech.com</p>
+              <a href="mailto:Roland@roland-tech.com" target="_blank">
+                <img
+                  src={Email}
+                  alt="Email Icon"
+                  className="w-6 h-6 mx-auto mb-1"
+                />
+              </a>
+              <p className="whitespace-nowrap">Roland@roland-tech.com</p>
             </div>
           </div>
         </div>

@@ -5,8 +5,53 @@
   --animate-menu-close: menu-close 0.5s ease-in-out forwards;
   --animate-fade-in-right: fade-in-right 1s ease-in-out forwards;
   --animate-fade-out-right: fade-out-right 1s ease-in-out forwards;
-  --animate-typing:
-    typing 2s steps(20) forwards, blink-caret 0.75s infinite;
+  --animate-fade-in-left: fade-in-left 1s ease-in-out forwards;
+  --animate-fade-out-left: fade-out-left 1s ease-in-out forwards;
+  --animate-fade-in-up: fade-in-up 1s ease-in-out forwards;
+  --animate-fade-out-up: fade-out-up 1s ease-in-out forwards;
+  --animate-typing: typing 2s steps(20) forwards, blink-caret 0.75s infinite;
+
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-out-up {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes fade-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes fade-out-left {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
 
   @keyframes typing {
     0% {
