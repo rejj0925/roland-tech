@@ -92,12 +92,21 @@ function Home() {
                 Roland Technologies
               </div>
               <div
-                className="flex flex-col w-10  h-10 justify-evenly p-2 cursor-pointer"
+                className={`${menuIsOpen ? "relative w-10 h-10 cursor-pointer" : "flex flex-col w-10  h-10 justify-evenly cursor-pointer"}`}
                 onClick={toggleMenu}
               >
-                <div className="bg-gray-900 w-full h-1 rounded"></div>
-                <div className="bg-gray-900 w-full h-1 rounded"></div>
-                <div className="bg-gray-900 w-full h-1 rounded"></div>
+                <div
+                  className={`${menuIsOpen ? "absolute top-1/2 transform rotate-45 bg-gray-900 w-full h-1 rounded" : "bg-gray-900 w-full h-1 rounded"}
+                  transform transition-all duration-1000 ease-in-out`}
+                ></div>
+                <div
+                  className={`${menuIsOpen ? "opacity-0" : "bg-gray-900 w-full h-1 rounded"}
+                  transform transition-all duration-1000 ease-in-out`}
+                ></div>
+                <div
+                  className={`${menuIsOpen ? "absolute top-1/2 transform -rotate-45 bg-gray-900 w-full h-1 rounded" : "bg-gray-900 w-full h-1 rounded"}
+                  transform transition-all duration-1000 ease-in-out`}
+                ></div>
               </div>
             </div>
           </nav>
