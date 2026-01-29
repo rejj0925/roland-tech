@@ -129,7 +129,7 @@ function Home() {
           </div>
 
           {/*ABOUT*/}
-          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-md gap-20 w-screen min-h-screen">
+          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-2xl gap-20 w-screen min-h-screen rounded-t-4xl justify-around py-10">
             <div className="flex flex-col gap-5 text-center justify-center items-center w-full px-10">
               <h2 className="text-5xl font-semibold">
                 Roland Technologies, Inc.
@@ -214,8 +214,8 @@ function Home() {
 
         {/* SOCIALS */}
         <div className="flex flex-col justify-center items-center gap-5 p-5 shadow-lg">
-          <h2 className="text-2xl font-medium text-center w-60">
-            We would love to hear from you
+          <h2 className="text-2xl font-medium text-center flex flex-nowrap transition-all animate-pulse ease-in-out">
+            We would love to hear from you!
           </h2>
           <div className="flex flex-row gap-5 justify-around text-gray-700">
             <div className="items-center justify-around">
