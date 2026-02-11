@@ -85,54 +85,12 @@ function Home() {
   return (
     <>
       <div className="bg-gray-300 min-h-screen overflow-x-hidden p-0 m-0">
-        <div className="fixed flex flex-col w-screen z-50">
-          <nav className="bg-white/95 top-0 flex w-screen h-20 items-center shadow-md z-50 rounded-b-md">
-            <div className="flex flex-row justify-around w-full items-center gap-5 h-full">
-              <div className="text-2xl text-nowrap ml-5 cursor-pointer">
-                Roland Technologies
-              </div>
-              <div
-                className={`${menuIsOpen ? "relative w-10 h-10 cursor-pointer" : "flex flex-col w-10  h-10 justify-evenly cursor-pointer"}`}
-                onClick={toggleMenu}
-              >
-                <div
-                  className={`${menuIsOpen ? "absolute top-1/2 transform rotate-45 bg-gray-900 w-full h-1 rounded" : "bg-gray-900 w-full h-1 rounded"}
-                  transform transition-all duration-1000 ease-in-out`}
-                ></div>
-                <div
-                  className={`${menuIsOpen ? "opacity-0" : "bg-gray-900 w-full h-1 rounded"}
-                  transform transition-all duration-1000 ease-in-out`}
-                ></div>
-                <div
-                  className={`${menuIsOpen ? "absolute top-1/2 transform -rotate-45 bg-gray-900 w-full h-1 rounded" : "bg-gray-900 w-full h-1 rounded"}
-                  transform transition-all duration-1000 ease-in-out`}
-                ></div>
-              </div>
-            </div>
-          </nav>
-          <div
-            className={`${
-              menuIsOpen ? "animate-menu-open" : "animate-menu-close"
-            } flex flex-row h-10 bg-gray-900 justify-around shadow-2xl items-center rounded-md text-white`}
-          >
-            <div className="cursor-pointer hover:bg-gray-700 w-full h-full text-center flex items-center justify-center">
-              Home
-            </div>
-            <div className="cursor-pointer hover:bg-gray-700 w-full h-full text-center flex items-center justify-center">
-              About
-            </div>
-            <div className="cursor-pointer hover:bg-gray-700 w-full h-full text-center flex items-center justify-center">
-              Contact
-            </div>
-          </div>
-        </div>
-
         {/* HERO SECTION */}
         <div className="flex flex-col px-2 items-center min-h-screen bg-[url('/roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
           <div className="flex justify-center items-center h-screen w-full px-4">
             <div className="font-bold text-center bg-gray-900 p-4 mx-4 rounded-md flex justify-center items-center shadow-lg">
               <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1 flex-nowrap lg:text-nowrap">
-                Roland Technologies.
+                Roland Technologies Inc.
               </h1>
             </div>
           </div>
@@ -158,8 +116,8 @@ function Home() {
                 About Roland Technologies
               </h2>
               <div
-                ref={ref1}
-                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
+                ref={ref2}
+                className={`${view2 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
               >
                 <p className="text-2xl">
                   An experienced generator systems specialist with many
