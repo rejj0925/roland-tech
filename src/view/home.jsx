@@ -158,8 +158,8 @@ function Home() {
         {/* SERVICE PROMO */}
         <div className="py-10 bg-white w-screen h-screen flex justify-center items-center font-bold text-center gap-20 flex-col shadow-md">
           <div
-            ref={ref2}
-            className={`${view2 ? "animate-fade-in-up" : "opacity-0"} w-full transition duration-700`}
+            ref={ref3}
+            className={`${view3 ? "animate-fade-in-up" : "opacity-0"} w-full transition duration-700`}
           >
             <h1 className="text-4xl">Stay Connected, Reliable Service</h1>
           </div>
