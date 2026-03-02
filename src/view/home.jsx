@@ -15,7 +15,7 @@ function useInView(options) {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.5, ...options },
+      { threshold: 0.3, ...options },
     );
 
     if (ref.current) observer.observe(ref.current);
@@ -96,7 +96,7 @@ function Home() {
           </div>
 
           {/*ABOUT*/}
-          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-2xl gap-20 w-screen min-h-screen rounded-t-4xl justify-around py-10">
+          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-2xl gap-20 w-screen min-h-screen rounded-t-4xl justify-around py-10 lg:px-36">
             <div className="flex flex-col gap-5 text-center justify-center items-center w-full px-10">
               <h2 className="text-5xl font-semibold">
                 Roland Technologies, Inc.
