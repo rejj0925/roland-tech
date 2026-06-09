@@ -2,8 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import "../App.css";
 import Phone from "../assets/phone-call.png";
 import Email from "../assets/gmail.png";
+import Facebook from "../assets/facebook.png";
+import { Link } from "react-router-dom";
 
-function useInView(options) {
+// Custom hook: triggers animation once element enters viewport
+function useInView(threshold = 0.2) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
 
@@ -15,211 +18,359 @@ function useInView(options) {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.3, ...options },
+      { threshold }
     );
-
     if (ref.current) observer.observe(ref.current);
-
-    return () => {
-      if (ref.current) observer.unobserve(ref.current);
-    };
-  }, [options]);
+    return () => observer.disconnect();
+  }, [threshold]);
 
   return [ref, inView];
 }
 
-function Home() {
-  const [ref1, view1] = useInView();
-  const [ref2, view2] = useInView();
-  const [ref3, view3] = useInView();
-  const [ref4, view4] = useInView();
-
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuIsOpen(!menuIsOpen);
-  };
-  const imgRef = useRef(null);
-
-  const goFullscreen = () => {
-    if (imgRef.current.requestFullscreen) {
-      imgRef.current.requestFullscreen();
-    } else if (imgRef.current.mozRequestFullScreen) {
-      /* Firefox */
-      imgRef.current.mozRequestFullScreen();
-    } else if (imgRef.current.webkitRequestFullscreen) {
-      /* Chrome, Safari & Opera */
-      imgRef.current.webkitRequestFullscreen();
-    } else if (imgRef.current.msRequestFullscreen) {
-      /* IE/Edge */
-      imgRef.current.msRequestFullscreen();
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      /* Firefox */
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      /* Chrome, Safari and Opera */
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-      /* IE/Edge */
-      document.msExitFullscreen();
-    }
-  };
-
-  useEffect(() => {
-    const handler = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener("fullscreenchange", handler);
-    return () => {
-      document.removeEventListener("fullscreenchange", handler);
-    };
-  }, []);
+// Reusable fade-in wrapper
+function FadeIn({ children, direction = "up", delay = "0ms", className = "" }) {
+  const [ref, inView] = useInView();
+  const directionClass = {
+    up: "translate-y-8",
+    left: "translate-x-8",
+    right: "-translate-x-8",
+  }[direction];
 
   return (
-    <>
-      <div className="bg-gray-300 min-h-screen overflow-x-hidden p-0 m-0">
-        {/* HERO SECTION */}
-        <div className="flex flex-col px-2 items-center min-h-screen bg-[url('/roland-tech-background-img.jpg')] bg-cover bg-center bg-fixed">
-          <div className="flex justify-center items-center h-screen w-full px-4">
-            <div className="font-bold text-center bg-gray-900 p-4 mx-4 rounded-md flex justify-center items-center shadow-lg">
-              <h1 className="text-white text-5xl animate-typing border-r-2 border-white overflow-hidden p-1 flex-nowrap lg:text-nowrap">
-                Roland Technologies Inc.
-              </h1>
-            </div>
-          </div>
+    <div
+      ref={ref}
+      style={{ transitionDelay: delay }}
+      className={`transition-all duration-700 ease-out
+        ${inView ? "opacity-100 translate-x-0 translate-y-0" : `opacity-0 ${directionClass}`}
+        ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
 
-          {/*ABOUT*/}
-          <div className="flex flex-col mt-11 bg-gray-200 pt-10 shadow-2xl gap-20 w-screen min-h-screen rounded-t-4xl justify-around py-10 lg:px-36">
-            <div className="flex flex-col gap-5 text-center justify-center items-center w-full px-10">
-              <h2 className="text-5xl font-semibold">
-                Roland Technologies, Inc.
-              </h2>
-              <div
-                ref={ref1}
-                className={`${view1 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
-              >
-                <p className="text-2xl">
-                  When it comes to Emergency and Critical Power, work with the
-                  best generator system specialist in Southern California.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-5 text-center justify-center items-center px-10">
-              <h2 className="text-5xl font-semibold mt-10">
-                About Roland Technologies
-              </h2>
-              <div
-                ref={ref2}
-                className={`${view2 ? "animate-fade-in-right" : "opacity-0"} bg-white p-2 rounded-md shadow-md w-full text-center`}
-              >
-                <p className="text-2xl">
-                  An experienced generator systems specialist with many
-                  satisfied clients ranging from industrial as well as
-                  commercial businesses and even cities. Stay up to code and
-                  connected, also worry less if your systems are in check.
-                </p>
-              </div>
-              <div className="flex flex-col justify-center items-center gap-0">
-                <div
-                  ref={imgRef}
-                  onClick={goFullscreen}
-                  className="border-2 rounded-md overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
-                >
-                  <img
-                    src="/ikea_carson_generator.jpg"
-                    alt="Generator"
-                    className="object-cover overflow-hidden shadow-lg aspect-square w-60 cursor-pointer"
-                  />
-                  {isFullscreen && (
-                    <button
-                      onClick={exitFullscreen}
-                      className="fixed top-10 right-5 bg-gray-600 text-white px-3 py-2 rounded z-50 cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
+// Stat card shown in hero
+function StatCard({ value, label }) {
+  return (
+    <div className="text-center px-6 py-4 border-l border-gray-700 first:border-l-0">
+      <p className="text-3xl font-bold text-amber-400">{value}</p>
+      <p className="text-xs text-gray-400 uppercase tracking-wider mt-0.5">{label}</p>
+    </div>
+  );
+}
 
-                <p className="italic text-gray-700 text-sm">
-                  Generator Installation
-                </p>
-              </div>
-            </div>
-          </div>
+// Service card in the capabilities section
+function ServiceCard({ icon, title, description }) {
+  return (
+    <FadeIn direction="up">
+      <div className="group bg-white border border-gray-100 rounded-xl p-6 hover:border-amber-400 hover:shadow-lg transition-all duration-300">
+        <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-400 transition-colors duration-300">
+          <span className="text-amber-500 group-hover:text-white text-xl transition-colors duration-300">
+            {icon}
+          </span>
         </div>
-
-        {/* SERVICE PROMO */}
-        <div className="py-10 bg-white w-screen h-screen flex justify-center items-center font-bold text-center gap-20 flex-col shadow-md">
-          <div
-            ref={ref3}
-            className={`${view3 ? "animate-fade-in-up" : "opacity-0"} w-full transition duration-700`}
-          >
-            <h1 className="text-4xl">Stay Connected, Reliable Service</h1>
-          </div>
-          <div className="w-full h-full flex justify-center flex-col px-10">
-            <p className="flex justify-start italic text-gray-700 text-xs">
-              Location of Roland Technologies
-            </p>
-            <div className="flex justify-center items-center border-2 w-full h-full rounded-md overflow-hidden shadow-lg">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3301.0498090669203!2d-118.50144652452283!3d34.17064417311263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c299cd9b4af085%3A0xc53f5242436b194f!2s5462%20Forbes%20Ave%2C%20Encino%2C%20CA%2091436%2C%20USA!5e0!3m2!1sen!2sph!4v1768895367238!5m2!1sen!2sph"
-                className="w-full h-full"
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-
-        {/* SOCIALS */}
-        <div className="flex flex-col justify-center items-center gap-5 p-5 shadow-lg">
-          <h2 className="text-2xl font-medium text-center flex flex-nowrap transition-all animate-pulse ease-in-out">
-            We would love to hear from you!
-          </h2>
-          <div className="flex flex-row gap-5 justify-around text-gray-700">
-            <div className="items-center justify-around">
-              <a href="tel:+18189843777">
-                <img
-                  src={Phone}
-                  alt="Phone Icon"
-                  className="w-6 h-6 mx-auto mb-1"
-                />
-              </a>
-              <p className="whitespace-nowrap">(818) 984-3777</p>
-            </div>
-            <div className="items-center justify-around">
-              <a href="mailto:Roland@roland-tech.com" target="_blank">
-                <img
-                  src={Email}
-                  alt="Email Icon"
-                  className="w-6 h-6 mx-auto mb-1"
-                />
-              </a>
-              <p className="whitespace-nowrap">Roland@roland-tech.com</p>
-            </div>
-          </div>
-        </div>
+        <h3 className="font-bold text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
       </div>
-      <footer className="bg-white h-12 flex items-center justify-center text-center p-5 mt-5 shadow-md">
-        &copy; 2026 Roland Technologies. All rights reserved.
+    </FadeIn>
+  );
+}
+
+const SERVICES = [
+  {
+    icon: "⚡",
+    title: "Critical Power Systems",
+    description:
+      "Design, installation, and maintenance of emergency and backup power systems for commercial and government facilities.",
+  },
+  {
+    icon: "🔥",
+    title: "Engine Overhauls",
+    description:
+      "Full rebuild and repair services for EMD, Cummins, CAT, MTU, and Kohler generator engines.",
+  },
+  {
+    icon: "🌡️",
+    title: "Infrared Thermography",
+    description:
+      "Non-contact thermal imaging to identify electrical faults, overloads, and heat anomalies before failures occur.",
+  },
+  {
+    icon: "🖥️",
+    title: "PLC & Digital Controls",
+    description:
+      "Programming and commissioning of digital and PLC-based generator control and paralleling systems.",
+  },
+  {
+    icon: "💧",
+    title: "Fire Pump Services",
+    description:
+      "Fire pump installation, testing, and engine repair to keep life-safety systems code-compliant and operational.",
+  },
+  {
+    icon: "📋",
+    title: "Engineering & Load Testing",
+    description:
+      "Certified engineering drawings, load calculations, and full load testing for generators and automatic transfer switches.",
+  },
+];
+
+const CLIENTS = [
+  "SMS Data Center – Irvine",
+  "Everport Terminal Services – San Pedro",
+  "Courtyard Marriott – LAX",
+  "CBRE Univision – Los Angeles",
+  "IKEA – Carson",
+  "Brookfield Properties Galleria – Glendale",
+  "VA Sepulveda – Joint Operation",
+  "SpaceX Platform – Pascagoula Naval Station",
+  "IRS Headquarters – Ogden, Utah",
+  "Orange County Sanitation District",
+];
+
+function Home() {
+  return (
+    <>
+      {/* ─── HERO ────────────────────────────────────────────────────── */}
+      <section
+        aria-label="Hero"
+        className="relative min-h-screen flex flex-col justify-center bg-gray-950
+          bg-[url('/roland-tech-background-img.jpg')] bg-cover bg-center bg-no-repeat"
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gray-950/75" />
+
+        {/* Amber accent stripe */}
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-400" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-20">
+          {/* Eyebrow */}
+          <p className="text-amber-400 text-xs font-bold uppercase tracking-[0.25em] mb-4">
+            Southern California's Premier Power Specialists
+          </p>
+
+          {/* Headline */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight max-w-3xl">
+            Critical Power,
+            <br />
+            <span className="text-amber-400">When It Matters Most.</span>
+          </h1>
+
+          <p className="mt-6 text-gray-300 text-lg max-w-xl leading-relaxed">
+            Roland Technologies delivers emergency power solutions for
+            government, commercial, marine, rail, and industrial clients —
+            backed by 70+ years of combined experience.
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap gap-4">
+            <a
+              href="tel:+18189843777"
+              className="px-7 py-3.5 bg-amber-400 text-gray-950 font-bold rounded hover:bg-amber-300 transition-colors duration-200 text-sm uppercase tracking-wider"
+            >
+              Call 24/7 Emergency Line
+            </a>
+            <Link
+              to="/about"
+              className="px-7 py-3.5 border border-gray-500 text-white font-semibold rounded hover:border-amber-400 hover:text-amber-400 transition-colors duration-200 text-sm uppercase tracking-wider"
+            >
+              Our Capabilities
+            </Link>
+          </div>
+
+          {/* Stats bar */}
+          <div className="mt-16 inline-flex flex-wrap bg-gray-900/70 border border-gray-800 rounded-xl overflow-hidden backdrop-blur-sm">
+            <StatCard value="70+" label="Years Combined Experience" />
+            <StatCard value="24/7" label="Emergency Service" />
+            <StatCard value="10+" label="Major Certifications" />
+            <StatCard value="Gov / Com" label="Cleared & Insured" />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SERVICES ────────────────────────────────────────────────── */}
+      <section aria-label="Services" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <FadeIn>
+            <p className="text-amber-500 text-xs font-bold uppercase tracking-[0.25em] mb-2">
+              What We Do
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Full-Spectrum Power Services
+            </h2>
+            <p className="text-gray-600 max-w-2xl mb-12">
+              From routine maintenance to emergency response, we cover every
+              aspect of critical power systems — keeping your operations
+              running without interruption.
+            </p>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SERVICES.map((svc, i) => (
+              <ServiceCard key={i} {...svc} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── WHY US ──────────────────────────────────────────────────── */}
+      <section aria-label="Why Roland Technologies" className="py-24 bg-gray-950">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-16 items-center">
+          {/* Left: text */}
+          <FadeIn direction="right">
+            <p className="text-amber-400 text-xs font-bold uppercase tracking-[0.25em] mb-2">
+              Why Choose Us
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6">
+              Trusted by Government,
+              <br /> Built for Industry.
+            </h2>
+            <p className="text-gray-400 leading-relaxed mb-8">
+              As a minority-owned, small private company, we bring the
+              responsiveness of a specialized firm with the credentials and
+              clearances of a major contractor. Our team holds Homeland
+              Security clearances, multiple OEM certifications, and decades
+              of hands-on field experience.
+            </p>
+            <ul className="space-y-3">
+              {[
+                "Homeland Security Clearances",
+                "Minority-Owned, Fully Insured",
+                "Cummins, CAT, EMD Certified",
+                "Engineering Drawings & PE Calculations",
+                "Advanced Paralleling & PLC Controls",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3 text-gray-300 text-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/about"
+              className="inline-block mt-8 text-amber-400 text-sm font-semibold hover:text-amber-300 transition-colors underline underline-offset-4"
+            >
+              View Full Company Profile →
+            </Link>
+          </FadeIn>
+
+          {/* Right: generator image */}
+          <FadeIn direction="left" delay="150ms">
+            <figure className="rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+              <img
+                src="/ikea_carson_generator.jpg"
+                alt="Generator installation completed by Roland Technologies at IKEA Carson"
+                className="w-full h-72 md:h-96 object-cover"
+              />
+              <figcaption className="bg-gray-900 text-gray-500 text-xs px-4 py-2 italic">
+                Generator installation — IKEA, Carson, CA
+              </figcaption>
+            </figure>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ─── CLIENTS ─────────────────────────────────────────────────── */}
+      <section aria-label="Selected Clients" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <FadeIn>
+            <p className="text-amber-500 text-xs font-bold uppercase tracking-[0.25em] mb-2">
+              Trusted By
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">
+              Selected Clients & References
+            </h2>
+          </FadeIn>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {CLIENTS.map((client, i) => (
+              <FadeIn key={i} delay={`${i * 60}ms`}>
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100 text-sm text-gray-700 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                  {client}
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── LOCATION ────────────────────────────────────────────────── */}
+      <section aria-label="Location" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <FadeIn>
+            <p className="text-amber-500 text-xs font-bold uppercase tracking-[0.25em] mb-2">
+              Find Us
+            </p>
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+              Serving All of Southern California
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Headquartered in Encino, CA — available 24/7 for emergency
+              dispatch throughout the region.
+            </p>
+          </FadeIn>
+          <div className="rounded-xl overflow-hidden border border-gray-200 shadow-md h-80 md:h-[420px]">
+            <iframe
+              title="Roland Technologies Office Location — 5462 Forbes Ave, Encino, CA"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3301.0498090669203!2d-118.50144652452283!3d34.17064417311263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c299cd9b4af085%3A0xc53f5242436b194f!2s5462%20Forbes%20Ave%2C%20Encino%2C%20CA%2091436%2C%20USA!5e0!3m2!1sen!2sph!4v1768895367238!5m2!1sen!2sph"
+              className="w-full h-full"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA BANNER ──────────────────────────────────────────────── */}
+      <section
+        aria-label="Contact call to action"
+        className="py-20 bg-gray-950 border-t-4 border-amber-400"
+      >
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <FadeIn>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+              Power Emergency? We're Available 24/7.
+            </h2>
+            <p className="text-gray-400 mb-10">
+              Don't wait. Contact our team now for immediate emergency support
+              or to schedule a consultation.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <a
+                href="tel:+18189843777"
+                className="flex items-center gap-3 px-6 py-4 bg-amber-400 text-gray-950 font-bold rounded-lg hover:bg-amber-300 transition-colors"
+              >
+                <img src={Phone} alt="" className="w-5 h-5" aria-hidden="true" />
+                (818) 984-3777
+              </a>
+              <a
+                href="mailto:Roland@roland-tech.com"
+                className="flex items-center gap-3 px-6 py-4 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <img src={Email} alt="" className="w-5 h-5" aria-hidden="true" />
+                Roland@roland-tech.com
+              </a>
+              <a
+                href="https://www.facebook.com/roland.reyes.14"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-6 py-4 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <img src={Facebook} alt="Facebook" className="w-5 h-5" />
+                Roland Reyes
+              </a>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ─── FOOTER ──────────────────────────────────────────────────── */}
+      <footer className="bg-gray-950 border-t border-gray-800 py-6 text-center text-gray-500 text-sm">
+        &copy; {new Date().getFullYear()} Roland Technologies Inc. All rights reserved.
       </footer>
     </>
   );
 }
 
 export default Home;
-
-/*<ul className="flex justify-around w-full md:text-2xl h-full items-center [&>li:hover]:bg-indigo-400 [&>li]:w-full [&>li]:h-full [&>li]:flex [&>li]:justify-center [&>li]:items-center cursor-pointer [&>li]:transition-colors [&>li]:ease-in-out [&>li]:duration-300">
-              <li>Home</li>
-              <li>About</li>
-              <li>Contacts</li>
-            </ul>
-*/
